@@ -44,7 +44,7 @@ if (params.part == 'bait_test'){
     script:
     """
       ls -alL
-      Rscript /scripts/bait_level_test.R $logr $covar $params.chrom
+      # Rscript /scripts/bait_level_test.R $logr $covar $params.chrom
     """
   }
 }

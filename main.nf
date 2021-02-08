@@ -23,7 +23,7 @@ def helpMessage() {
 if (params.help) exit 0, helpMessage()
 
 if (params.covar) ch_covar = Channel.value(file(params.covar))
-if (params.logr) ch_covar = Channel.value(file(params.logr))
+if (params.logr) ch_logr = Channel.value(file(params.logr))
 
 
 

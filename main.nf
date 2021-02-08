@@ -6,7 +6,7 @@ def helpMessage() {
     Usage:
     The typical command for running the pipeline is as follows:
     
-    nextflow run main.nf --project test --part 4 
+    nextflow run main.nf --covar covar.tsv --logr logr.csv --chrom 5
     
     Mandatory arguments:
       --covar       [string] Name of the project
@@ -30,7 +30,7 @@ if (params.logr) ch_logr = Channel.value(file(params.logr))
 // Doing bait-level association test
 if (params.part == 'bait_test'){
   process bait_test {
-    tag "${sample_name}"
+    tag "${params.chrom}"
     echo true
     publishDir "results/", mode: "move"
 
@@ -43,6 +43,7 @@ if (params.part == 'bait_test'){
 
     script:
     """
+      ls -alL
       Rscript /scripts/bait_level_test.R $logr $covar $params.chrom
     """
   }

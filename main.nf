@@ -9,9 +9,10 @@ def helpMessage() {
     nextflow run main.nf --covar covar.tsv --logr logr.csv --chrom 5
     
     Mandatory arguments:
-      --covar       [string] Name of the project
-      --logr
-      --chrom         
+      --covar       [string] path to covar file in plain test
+      --logr        [string] path to logr data in plain text
+      --output      [string] name of the output file
+      --demedian    [string] Remove median from logR by binary response: TRUE or FALSE
 
     Optional arguments:
       --help          [flag] Show help messages
@@ -30,7 +31,7 @@ if (params.logr) ch_logr = Channel.value(file(params.logr))
 // Doing bait-level association test
 if (params.part == 'bait_test'){
   process bait_test {
-    tag "${params.chrom}"
+    tag "${params.output}"
     echo true
     publishDir "results/", mode: "move"
 
@@ -39,12 +40,11 @@ if (params.part == 'bait_test'){
     path logr from ch_logr
 
     output:
-    path "covid_v2_chr${params.chrom}_bait_result_mixed.csv"
+    path "${params.output}"
 
     script:
     """
-      ls -alL
-      Rscript /scripts/bait_level_test.R $logr $covar $params.chrom
+      Rscript /scripts/bait_level_test.R $logr $covar ${params.output} ${params.demedian}
     """
   }
 }

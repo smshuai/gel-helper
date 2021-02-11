@@ -33,7 +33,7 @@ res <- foreach(ix=1:nrow(data), .combine='rbind') %dopar% {
 res = setDT(as.data.frame(res))
 colnames(res) = c('CHR', 'START', 'END', 'EST', 'SE', 'Z', 'P')
 
-if (make_plot) {
+if (makeplot) {
     source('/scripts/gwas_res_plot.R')
     p = manhattan_plot(res) / (pval_hist(res$P) | pval_qqplot(res$P))
     ggsave(paste0(out, '.png'), p, width = 15, height=15, units = 'cm', dpi=300)

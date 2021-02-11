@@ -41,7 +41,7 @@ if (params.part == 'bait_test'){
     path logr from ch_logr
 
     output:
-    path "${params.output}"
+    path "${params.output}*"
 
     script:
     """

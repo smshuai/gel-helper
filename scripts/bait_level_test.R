@@ -1,6 +1,7 @@
 library(foreach)
 library(doMC)
 library(data.table)
+library(patchwork)
 
 args = commandArgs(trailingOnly=TRUE)
 
@@ -10,6 +11,7 @@ data = fread(args[1])
 covar = fread(args[2])
 out = args[3]
 demedian = args[4]
+makeplot = args[5]
 
 setkey(covar, platekey)
 use_samples = intersect(covar$platekey, colnames(data))
@@ -29,5 +31,12 @@ res <- foreach(ix=1:nrow(data), .combine='rbind') %dopar% {
 }
 
 res = setDT(as.data.frame(res))
+colnames(res) = c('CHR', 'START', 'END', 'EST', 'SE', 'Z', 'P')
 
-fwrite(res, out, row.names=F, quote=F)
+if (make_plot) {
+    source('/scripts/gwas_res_plot.R')
+    p = manhattan_plot(res) / (pval_hist(res$P) | pval_qqplot(res$P))
+    ggsave(paste0(out, '.png'), p, width = 15, height=15, units = 'cm', dpi=300)
+}
+
+fwrite(res, paste0(out, '.txt'), row.names=F, quote=F)

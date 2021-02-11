@@ -10,6 +10,9 @@ RUN R -e "install.packages('doParallel', dependencies=TRUE, repos='http://cran.r
 RUN R -e "install.packages('data.table', dependencies=TRUE, repos='http://cran.rstudio.com/')"
 RUN R -e "install.packages('remotes', dependencies=TRUE, repos='http://cran.rstudio.com/')"
 RUN R -e "remotes::install_github('https://github.com/tf2/recipeB.git')"
+RUN R -e "install.packages('tidyverse', dependencies=TRUE, repos='http://cran.rstudio.com/')"
+RUN R -e "install.packages('ggrepel', dependencies=TRUE, repos='http://cran.rstudio.com/')"
+RUN R -e "install.packages('patchwork', dependencies=TRUE, repos='http://cran.rstudio.com/')"
 
 RUN mkdir -p /scripts/
 COPY scripts/* /scripts/

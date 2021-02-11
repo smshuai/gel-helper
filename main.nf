@@ -13,6 +13,7 @@ def helpMessage() {
       --logr        [string] path to logr data in plain text
       --output      [string] name of the output file
       --demedian    [string] Remove median from logR by binary response: TRUE or FALSE
+      --plot        [string] Make plots: TRUE or FALSE
 
     Optional arguments:
       --help          [flag] Show help messages
@@ -44,7 +45,7 @@ if (params.part == 'bait_test'){
 
     script:
     """
-      Rscript /scripts/bait_level_test.R $logr $covar ${params.output} ${params.demedian}
+      Rscript /scripts/bait_level_test.R $logr $covar ${params.output} ${params.demedian} ${params.plot}
     """
   }
 }

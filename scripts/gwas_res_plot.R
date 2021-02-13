@@ -10,16 +10,12 @@ manhattan_plot <- function(gwas.dat, sig='auto', chroms=1:24, annot=FALSE) {
 
     nbp = gwas.dat[, list('nbp'=max(BP)), by=CHR]
     setkey(nbp, CHR)
-    nbp[, bp_offset:=c(0, cumsum(nbp)[-nCHR])]
+    nbp[, bp_offset:=c(0, cumsum(as.numeric(nbp))[-nCHR])]
     gwas.dat = gwas.dat[nbp]
     gwas.dat[, BPcum:=BP+bp_offset]
     axis.set <- gwas.dat[, list('center'=(max(BPcum)+min(BPcum))/2), by=CHR]
     
     if (sig=='auto') sig <- 0.01/nrow(gwas.dat)
-    
-    n = 3 # annot top 3 sig genes
-    gene_annot = gwas.dat[P <= 0.0001][order(P)][, head(gene_name, n), by=CHR]$V1
-    
     
     ylim <- max(-log10(gwas.dat$P)) * 1.1
     
@@ -36,9 +32,13 @@ manhattan_plot <- function(gwas.dat, sig='auto', chroms=1:24, annot=FALSE) {
         theme(legend.position = 'none',
             panel.border = element_blank(),
             panel.grid = element_blank())
-    if (annot) manhplot +
-        geom_text_repel(data=gwas.dat[gene_name %in% gene_annot],
-                        aes(x=BPcum, y=-log10(P), label=gene_name))
+    if (annot) {
+        n = 3 # annot top 3 sig genes
+        gene_annot = gwas.dat[P <= 0.0001][order(P)][, head(gene_name, n), by=CHR]$V1
+        manhplot <- manhplot +
+                    geom_text_repel(data=gwas.dat[gene_name %in% gene_annot],
+                                    aes(x=BPcum, y=-log10(P), label=gene_name))
+    }
     return(manhplot)
 }
 

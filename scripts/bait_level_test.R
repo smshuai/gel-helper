@@ -2,19 +2,31 @@ library(foreach)
 library(doMC)
 library(data.table)
 library(patchwork)
+library(Rbin)
 
 args = commandArgs(trailingOnly=TRUE)
 
 print(args)
 
-data = fread(args[1])
+## CMD arguments
+rbin_dir = args[1]
 covar = fread(args[2])
 out = args[3]
-demedian = args[4]
-makeplot = args[5]
+indexfile = args[4]
+chrom = args[5]
+start = args[6]
+stop = args[7]
+demedian = args[8]
+makeplot = args[9]
 
-setkey(covar, platekey)
-use_samples = intersect(covar$platekey, colnames(data))
+## Make data
+rbin_names = dir(rbin_dir) # Assuming file name is sample name here
+use_samples = intersect(covar$platekey, rbin_names)
+rbin_files = paste0(rbin_dir, "/", use_samples)
+
+# RbinRead_exome_ratio(chr, start, stop, typ="mixed", indexfile = NULL, filenames=NULL)
+data = RbinRead_exome_ratio(chrom, start, stop, 'mixed', indexfile, rbin_files)
+
 
 registerDoMC(30)
 
@@ -33,6 +45,7 @@ res <- foreach(ix=1:nrow(data), .combine='rbind') %dopar% {
 res = setDT(as.data.frame(res))
 colnames(res) = c('CHR', 'START', 'END', 'EST', 'SE', 'Z', 'P')
 res[, BP:=(START+END)/2]
+
 if (makeplot) {
     source('/scripts/gwas_res_plot.R')
     p = manhattan_plot(res) / (pval_hist(res$P) | pval_qqplot(res$P))

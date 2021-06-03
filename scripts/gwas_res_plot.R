@@ -34,7 +34,7 @@ manhattan_plot <- function(gwas.dat, sig='auto', chroms=1:24, annot=FALSE) {
             panel.grid = element_blank())
     if (annot) {
         n = 3 # annot top 3 sig genes
-        gene_annot = gwas.dat[P <= 0.0001][order(P)][, head(gene_name, n), by=CHR]$V1
+        gene_annot = gwas.dat[P <= sig][order(P)][, head(gene_name, n), by=CHR]$V1
         manhplot <- manhplot +
                     geom_text_repel(data=gwas.dat[gene_name %in% gene_annot],
                                     aes(x=BPcum, y=-log10(P), label=gene_name))

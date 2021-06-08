@@ -1,2 +1,3 @@
-docker build -t smshuai/gel-helper:1.0 .
-docker push smshuai/gel-helper:1.0
+tag=$1
+docker build -t smshuai/gel-helper:$tag .
+docker push smshuai/gel-helper:$tag

@@ -3,6 +3,7 @@ require(ggplot2)
 require(ggrepel)
 
 manhattan_plot <- function(gwas.dat, sig='auto', chroms=1:24, annot=FALSE) {
+    gwas.dat <- gwas.dat[!is.na(P)]
     gwas.dat <- as.data.table(gwas.dat)
     gwas.dat <- gwas.dat[CHR %in% chroms]
     setkey(gwas.dat, CHR, BP)

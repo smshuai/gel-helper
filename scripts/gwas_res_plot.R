@@ -17,7 +17,7 @@ manhattan_plot <- function(gwas.dat, sig='auto', chroms=1:24, annot=FALSE) {
     
     if (sig=='auto') sig <- 0.01/nrow(gwas.dat)
     
-    ylim <- max(-log10(gwas.dat$P)) * 1.1
+    ylim <- max(c(-log10(gwas.dat$P), -log10(sig))) * 1.1
     
     manhplot <- ggplot(gwas.dat, aes(x=BPcum, y=-log10(P), color=as.factor(CHR))) +
         geom_point(alpha=0.75, size=0.5) +
@@ -33,18 +33,18 @@ manhattan_plot <- function(gwas.dat, sig='auto', chroms=1:24, annot=FALSE) {
             panel.border = element_blank(),
             panel.grid = element_blank())
     if (annot) {
-        n = 3 # annot top 3 sig genes
-        gene_annot = gwas.dat[P <= sig][order(P)][, head(gene_name, n), by=CHR]$V1
-        manhplot <- manhplot +
-                    geom_text_repel(data=gwas.dat[gene_name %in% gene_annot],
-                                    aes(x=BPcum, y=-log10(P), label=gene_name))
+        n = 3 # annot max 3 sig genes for each chrom with significant hits
+        gene_annot <- gwas.dat[P <= sig][order(P)][, head(Gene, n), by=CHR]$V1
+        if (length(gene_annot) > 0) {
+            manhplot <- manhplot + geom_text_repel(data=gwas.dat[Gene %in% gene_annot],
+                                                   aes(x=BPcum, y=-log10(P), label=gene_name))
+        }
     }
     return(manhplot)
 }
 
-library(ggplot2)
 
-pval_qqplot <- function(pvec) {
+pval_qqplot <- function(pvec, add_lambda=TRUE) {
     pobs = -log10(sort(pvec))
     pexp = -log10(1:length(pvec)/length(pvec))
     df = data.frame(pobs, pexp)
@@ -53,7 +53,14 @@ pval_qqplot <- function(pvec) {
         labs(x='Expected -log10(P)', y='Observed -log10(P)') +
         theme_bw() +
         theme(panel.grid = element_blank())
+    if (add_lambda) p <- p + annotate('text', x=max(pexp)*0.2, y=max(pobs)*0.9, label=sprintf('Lambda = %.3f', calc_lambda(pvec)), color='red')
     return(p)
+}
+
+calc_lambda <- function(pvec) {
+    chisq <- qchisq(1 - pvec, 1)
+    lambda <- median(chisq) / qchisq(1/2, df = 1)
+    return(lambda)
 }
 
 pval_hist <- function(pvec) {

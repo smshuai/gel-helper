@@ -13,6 +13,7 @@ RUN R -e "remotes::install_github('https://github.com/tf2/recipeB.git')"
 RUN R -e "install.packages('tidyverse', dependencies=TRUE, repos='http://cran.rstudio.com/')"
 RUN R -e "install.packages('ggrepel', dependencies=TRUE, repos='http://cran.rstudio.com/')"
 RUN R -e "install.packages('patchwork', dependencies=TRUE, repos='http://cran.rstudio.com/')"
+RUN R -e "install.packages('SPAtest', dependencies=TRUE, repos='http://cran.rstudio.com/')"
 
 RUN mkdir -p /scripts/
 COPY scripts/* /scripts/

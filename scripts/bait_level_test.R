@@ -1,7 +1,6 @@
 library(foreach)
 library(doMC)
 library(data.table)
-library(patchwork)
 
 args = commandArgs(trailingOnly=TRUE)
 
@@ -42,6 +41,7 @@ fwrite(res, paste0(out, '.txt'), row.names=F, quote=F)
 
 if (makeplot) {
     source('/scripts/gwas_res_plot.R')
+    require(patchwork)
     p = manhattan_plot(res) / (pval_hist(res$P) | pval_qqplot(res$P))
     ggsave(paste0(out, '.png'), p, width = 25, height=20, units = 'cm', dpi=300)
 }

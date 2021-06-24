@@ -44,7 +44,7 @@ if (params.part == 'bait_test'){
 
     script:
     """
-      Rscript /scripts/bait_level_test.R $logr $covar ${params.output} FALSE ${params.plot}
+      Rscript /scripts/bait_level_test.R $logr $covar ${params.output} ${params.plot}
     """
   }
 }
